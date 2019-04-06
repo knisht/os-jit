@@ -27,9 +27,6 @@ struct function_manager<R(Args...)> {
         {
             if (fd != -1) {
                 int ret_close = close(fd);
-                if (ret_close == -1) {
-                    return;
-                }
             }
         }
     };
@@ -37,8 +34,7 @@ struct function_manager<R(Args...)> {
     function_manager(char const *filename, size_t function_offset)
     {
         struct stat stat_info;
-        int ret_stat = stat(filename, &stat_info);
-        if (ret_stat == -1) {
+        if (stat(filename, &stat_info) == -1) {
             return;
         }
         size_t file_size = static_cast<size_t>(stat_info.st_size);
@@ -51,8 +47,7 @@ struct function_manager<R(Args...)> {
         if (fd_wrapper.fd == -1) {
             return;
         }
-        ssize_t received = read(fd_wrapper.fd, buffer, file_size);
-        if (received == -1) {
+        if (read(fd_wrapper.fd, buffer, file_size) == -1) {
             return;
         }
         memory_ptr =
@@ -80,9 +75,8 @@ struct function_manager<R(Args...)> {
 
     R apply(Args &&... args) const
     {
-        func_ptr hp =
-            reinterpret_cast<func_ptr>(reinterpret_cast<size_t>(memory_ptr));
-        return hp(std::forward<Args>(args)...);
+        func_ptr function = reinterpret_cast<func_ptr>(memory_ptr);
+        return function(std::forward<Args>(args)...);
     }
 
     ~function_manager() { munmap(memory_ptr, PAGE_SIZE); }

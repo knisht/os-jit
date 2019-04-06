@@ -50,7 +50,7 @@ void process(char const *filename, size_t function_offset, size_t change_offset)
                 manager.change_bytes(change_offset, current_salt);
                 std::cout << "Salt changed successfully: " << std::hex
                           << current_salt << std::endl;
-            } catch (std::invalid_argument &) {
+            } catch (std::logic_error &) {
                 std::cout << "Please, provide decimal number in range [0; 2^64)"
                           << std::endl;
             }
