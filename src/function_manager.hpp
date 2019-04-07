@@ -79,7 +79,11 @@ struct function_manager<R(Args...)> {
         return function(std::forward<Args>(args)...);
     }
 
-    ~function_manager() { munmap(memory_ptr, PAGE_SIZE); }
+    ~function_manager() { 
+        if (munmap(memory_ptr, PAGE_SIZE) == -1) {
+            std::cerr << strerror(errno) << std::endl;
+        } 
+    }
 };
 
 #endif
