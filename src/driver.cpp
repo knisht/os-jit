@@ -35,6 +35,9 @@ void process(char const *filename, size_t function_offset, size_t change_offset)
     while (true) {
         std::string input;
         getline(std::cin, input);
+        if (!std::cin) {
+            break;
+        }
         if (input.size() >= 1 && input.front() == escape_char) {
             print_number("Hash result: 0x", manager.apply(input.c_str() + 1));
         } else if (input.size() >= get_salt_command.size() &&
