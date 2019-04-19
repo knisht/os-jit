@@ -16,8 +16,12 @@ const size_t SALT_OFFSET = 0x12;
 const std::string get_salt_command = ":salt";
 const std::string change_salt_command = ":chsalt";
 const std::string quit_command = ":q";
-const std::string help_command = ":h";
 const char escape_char = '\\';
+
+void print_number(std::string const &message, unsigned long long number)
+{
+    std::cout << message << std::uppercase << std::hex << number << std::endl;
+}
 
 void process(char const *filename, size_t function_offset, size_t change_offset)
 {
@@ -32,13 +36,11 @@ void process(char const *filename, size_t function_offset, size_t change_offset)
         std::string input;
         getline(std::cin, input);
         if (input.size() >= 1 && input.front() == escape_char) {
-            std::cout << "Hash result: " << std::hex
-                      << manager.apply(input.c_str() + 1) << std::endl;
+            print_number("Hash result: 0x", manager.apply(input.c_str() + 1));
         } else if (input.size() >= get_salt_command.size() &&
                    input.substr(0, get_salt_command.size()) ==
                        get_salt_command) {
-            std::cout << "Current salt: " << std::hex << current_salt
-                      << std::endl;
+            print_number("Current salt: 0x", current_salt);
         } else if (input.size() >= change_salt_command.size() &&
                    input.substr(0, change_salt_command.size()) ==
                        change_salt_command) {
@@ -48,17 +50,15 @@ void process(char const *filename, size_t function_offset, size_t change_offset)
             try {
                 current_salt = std::stoull(number);
                 manager.change_bytes(change_offset, current_salt);
-                std::cout << "Salt changed successfully: " << std::hex
-                          << current_salt << std::endl;
-            } catch (std::logic_error &) {
+                print_number("Salt changed successfully: 0x", current_salt);
+            } catch (std::invalid_argument &) {
                 std::cout << "Please, provide decimal number in range [0; 2^64)"
                           << std::endl;
             }
         } else if (input == quit_command) {
             break;
         } else {
-            std::cout << "Hash result: " << std::hex
-                      << manager.apply(input.c_str()) << std::endl;
+            print_number("Hash result: 0x", manager.apply(input.c_str()));
         }
     }
 }
