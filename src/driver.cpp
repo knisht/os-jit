@@ -54,7 +54,7 @@ void process(char const *filename, size_t function_offset, size_t change_offset)
                 current_salt = std::stoull(number);
                 manager.change_bytes(change_offset, current_salt);
                 print_number("Salt changed successfully: 0x", current_salt);
-            } catch (std::invalid_argument &) {
+            } catch (std::logic_error const &) {
                 std::cout << "Please, provide decimal number in range [0; 2^64)"
                           << std::endl;
             }
