@@ -71,10 +71,9 @@ struct function_manager<R(Args...)> {
             std::cerr << "Could not change source code." << std::endl;
             return;
         }
-        unsigned long long *value_ptr = reinterpret_cast<unsigned long long *>(
+        void* value_ptr = reinterpret_cast<void *>(
             reinterpret_cast<size_t>(memory_ptr) + offset);
-        *value_ptr = 0;
-        *value_ptr = value;
+        memcpy(value_ptr, &value, sizeof(unsigned long long));
         if (mprotect(memory_ptr, PAGE_SIZE, PROT_NONE) == -1) {
             std::cerr << "Could not protect source code." << std::endl;
         }

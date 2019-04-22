@@ -6,7 +6,7 @@ include_directories(${PROJECT_SOURCE_DIR})
 
 SET(SOURCE_DIR ${PROJECT_SOURCE_DIR}/src)
 
-SET(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} -fsanitize=address)
+SET(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} -fsanitize=address,undefined)
 
 add_executable(jithash
     ${SOURCE_DIR}/driver.cpp
