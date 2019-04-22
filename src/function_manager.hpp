@@ -25,11 +25,8 @@ struct function_manager<R(Args...)> {
         fd_wrapper_t(fd_wrapper_t const &) = delete;
         ~fd_wrapper_t()
         {
-            if (fd != -1) {
-                int ret_close = close(fd);
-                if (ret_close == -1) {
-                    return;
-                }
+            if (fd != -1 && close(fd) == -1) {
+                    std::cerr << "Could not close file properly";
             }
         }
     };
@@ -88,13 +85,12 @@ struct function_manager<R(Args...)> {
     R apply(Args &&... args) const
     {
         if (mprotect(memory_ptr, PAGE_SIZE, PROT_EXEC | PROT_READ) == -1) {
-            std::cerr << "Could not access source code for execution."
-                      << std::endl;
+            throw std::runtime_error("Could not access source code for execution");
         }
-        func_ptr function = reinterpret_cast<func_ptr>(reinterpret_cast<size_t>(memory_ptr));
+        func_ptr function = reinterpret_cast<func_ptr>(memory_ptr);
         R result =  function(std::forward<Args>(args)...);
         if (mprotect(memory_ptr, PAGE_SIZE, PROT_NONE) == -1) {
-            std::cerr << "Could not protect source code." << std::endl;
+            throw std::runtime_error("Could not protect source code");
         }
         return result;
     }

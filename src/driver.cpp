@@ -39,7 +39,11 @@ void process(char const *filename, size_t function_offset, size_t change_offset)
             break;
         }
         if (input.size() >= 1 && input.front() == escape_char) {
-            print_number("Hash result: 0x", manager.apply(input.c_str() + 1));
+            try {
+                print_number("Hash result: 0x", manager.apply(input.c_str() + 1));
+            } catch (std::runtime_error const& e) {
+                std::cerr << e.what() << std::endl;
+            }
         } else if (input.size() >= get_salt_command.size() &&
                    input.substr(0, get_salt_command.size()) ==
                        get_salt_command) {
@@ -61,7 +65,11 @@ void process(char const *filename, size_t function_offset, size_t change_offset)
         } else if (input == quit_command) {
             break;
         } else {
-            print_number("Hash result: 0x", manager.apply(input.c_str()));
+            try {
+                print_number("Hash result: 0x", manager.apply(input.c_str()));
+            } catch (std::runtime_error const& e) {
+                std::cerr << e.what() << std::endl;
+            }
         }
     }
 }
@@ -72,12 +80,11 @@ JITHash project for ITMO OS course.
 This is a simple hasher of strings that you type.
 Usage:
 )BLOCK" +
-    quit_command + " -- quits the program. \n" + get_salt_command +
-    " -- prints current salt.  \n" + change_salt_command +
-    " [number] -- changes current salt to given number. Number must be in "
-    "range [0; 2^64) \n" +
-    "random_string -- calculates hash of random_string.  \n" + escape_char +
-    "[string] -- escaped string, calculates hash of string. \n";
+    quit_command + " -- quits the program. \n" + 
+    get_salt_command + " -- prints current salt.  \n" + 
+    change_salt_command + " [number] -- changes current salt to given number. Number must be in range [0; 2^64) \n" +
+    "random_string -- calculates hash of random_string.  \n" + 
+    escape_char + "[string] -- escaped string, calculates hash of string. \n";
 
 int main(int argc, char *argv[])
 {
